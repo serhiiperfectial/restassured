@@ -10,15 +10,28 @@ import static io.restassured.RestAssured.given;
 public class APIRequests {
 
 
-    public Response findLocation(String lat, String lon, String radius){
+    public Response findLocation(String lat, String lng, String radius){
         return RestAssured.given().contentType(ContentType.JSON).
-                pathParam("lat", lat).
-                pathParam("lng", lon).
+                queryParam("location", lat + "," + lng).
+                queryParam("radius", radius).
+                queryParam("key", AuthorizationKeys.API_KEY).
+                get(Endpoints.NEARBY_PLACE_QUERRY_PARAM);
+    }
+
+    public Response findLocation2(String lat, String lng, String radius){
+        return RestAssured.given().contentType(ContentType.JSON).
+                pathParam("location", lat + "," + lng).
                 pathParam("radius", radius).
-                get(Endpoints.NEARBY_PLACE);
+                pathParam("key", AuthorizationKeys.API_KEY).
+                get(Endpoints.NEARBY_PLACE_PATH_PARAM, "location", "radius", "key");
     }
 
     public boolean isSearchedNameFound(String name, Response response){
         return response.getBody().jsonPath().getList("results.name").contains(name);
     }
+
+    public void registerNewCustomer(String firstName, String userName, String password, String email) {
+
+    }
+
 }
