@@ -9,6 +9,11 @@ public class Endpoints {
 
     public static final String DEMOQA_REGISTER_USER = URLs.DEMOQA_USER + "/register";
 
+    //** ----------------- *//
+    public static final String SLACK_CHANNEL = URLs.SLACK_URL + "/channels";
+
+
+
 
     public String setPlaceType(String placeType){
         return NEARBY_PLACE_PATH_PARAM + "&type=" + placeType;

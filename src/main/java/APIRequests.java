@@ -34,4 +34,17 @@ public class APIRequests {
 
     }
 
+
+
+    public Response createNewChannel(String channelName){
+        return given().log().all()
+                .header("Authorization", AuthorizationKeys.SLACK_OAUTH_TOKEN)
+                .contentType(ContentType.JSON)
+                .body("{\n" +
+                        "\"name\": \""+ channelName + "\",\n" +
+                        "\"validate\": true\n" +
+                        "}")
+                .post(Endpoints.SLACK_CHANNEL + ".create");
+    }
+
 }
