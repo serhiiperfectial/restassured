@@ -6,7 +6,7 @@ import java.util.List;
 
 public class AuthorizationKeys {
 
-    public static List<String> getKeysList() {
+    private static List<String> getKeysList() {
         List<String> lines = new ArrayList<>();
         try {
             lines = Files.readAllLines(Paths.get("src/main/resources/tokens.txt"));
