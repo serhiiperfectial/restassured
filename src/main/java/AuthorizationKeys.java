@@ -1,4 +1,34 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 public class AuthorizationKeys {
-    public static final String API_KEY = "AIzaSyBMuFOHwFMQwh77puZDbIdKrcoAz4lxz-I";
-    public static final String SLACK_OAUTH_TOKEN = "Bearer xoxp-694282112674-707546734615-705712302229-8427bcfa1eecd3d0d2789ae39a683d45";
+
+    public static List<String> getKeysList() {
+        List<String> lines = new ArrayList<>();
+        try {
+            lines = Files.readAllLines(Paths.get("src/main/resources/tokens.txt"));
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return lines;
+    }
+
+    public static String getGoogleKey() {
+        for (String line : getKeysList()) {
+            if (line.startsWith("GoogleKey"))
+                return line.substring(line.indexOf(" ")+1).trim();
+        }
+        return null;
+    }
+
+    public static String getSlackToken() {
+        for (String line : getKeysList()) {
+            if (line.startsWith("SlackToken"))
+                return line.substring(line.indexOf(" ")+1).trim();
+        }
+        return null;
+    }
 }

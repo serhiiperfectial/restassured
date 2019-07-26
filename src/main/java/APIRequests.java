@@ -1,9 +1,6 @@
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.path.json.*;
-
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -14,7 +11,7 @@ public class APIRequests {
         return RestAssured.given().contentType(ContentType.JSON).
                 queryParam("location", lat + "," + lng).
                 queryParam("radius", radius).
-                queryParam("key", AuthorizationKeys.API_KEY).
+                queryParam("key", AuthorizationKeys.getGoogleKey()).
                 get(Endpoints.NEARBY_PLACE_QUERRY_PARAM);
     }
 
@@ -22,7 +19,7 @@ public class APIRequests {
         return RestAssured.given().contentType(ContentType.JSON).
                 pathParam("location", lat + "," + lng).
                 pathParam("radius", radius).
-                pathParam("key", AuthorizationKeys.API_KEY).
+                pathParam("key", AuthorizationKeys.getGoogleKey()).
                 get(Endpoints.NEARBY_PLACE_PATH_PARAM, "location", "radius", "key");
     }
 
@@ -38,7 +35,7 @@ public class APIRequests {
 
     public Response createNewChannel(String channelName){
         return given().log().all()
-                .header("Authorization", AuthorizationKeys.SLACK_OAUTH_TOKEN)
+                .header("Authorization", AuthorizationKeys.getSlackToken())
                 .contentType(ContentType.JSON)
                 .body("{\n" +
                         "\"name\": \""+ channelName + "\",\n" +

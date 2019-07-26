@@ -17,7 +17,7 @@ public class CallingRequests {
     @Test
     public void createChannel() {
         SoftAssert softAssert = new SoftAssert();
-        Response res = apiRequests.createNewChannel("hello_third_channel");
+        Response res = apiRequests.createNewChannel("hello_third1_channel");
         softAssert.assertEquals(200, res.statusCode(), "not equal");
         softAssert.assertTrue(res.getBody().jsonPath().get("ok").equals(true), "not created");
         softAssert.assertAll();
