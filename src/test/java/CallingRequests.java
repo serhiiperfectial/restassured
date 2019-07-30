@@ -70,4 +70,42 @@ public class CallingRequests {
         Response response = apiRequests.inviteUserToChannel(channelID, userID);
         Assert.assertTrue(apiRequests.getChannelMembers(channelID).contains(userID), "Error: " + apiRequests.getErrorFromResponse(response));
     }
+
+    @Test
+    public void deleteChannel() {
+        String channelID = apiRequests.getChannelIDByChannelName("qwertyuio");
+        Response response = apiRequests.deleteChannel(channelID);
+        Assert.assertTrue(apiRequests.isOK(response), "Error: " + apiRequests.getErrorFromResponse(response));
+    }
+
+    @Test
+    public void sendMessageToChannel() {
+        String channelID = apiRequests.getChannelIDByChannelName("edited-name");
+        String textMessage = "Whazaaaaaaaappppp";
+        Response response = apiRequests.postMessage(channelID, textMessage, false);
+        Assert.assertEquals(response.getBody().jsonPath().get("message.text"), textMessage, "Error: " + apiRequests.getErrorFromResponse(response));
+    }
+
+    @Test
+    public void deleteMessage(){
+        String message = "Whazaaaaaaaappppp";
+        String userID = apiRequests.getUserIDByName("Serhii");
+        String channelID = apiRequests.getChannelIDByChannelName("edited-name");
+        String messageTimestamp = apiRequests.getMessageTimestampInChannel(channelID, userID, true, message);
+        Response response = apiRequests.deleteMessageFromChannel(channelID, messageTimestamp, true);
+        Assert.assertTrue(apiRequests.isOK(response) && !apiRequests.isMessageInHistory(channelID, messageTimestamp), "Error: " + apiRequests.getErrorFromResponse(response));
+    }
+
+    @Test
+    public void updateMessage() {
+        String oldMessage = "Old message";
+        String updatedMessage = "Updated message";
+        String channelID = apiRequests.getChannelIDByChannelName("edited-name");
+        String userID = apiRequests.getUserIDByName("Serhii");
+        apiRequests.postMessage(channelID, oldMessage, true);
+        String messageToUpdateTimestamp = apiRequests.getMessageTimestampInChannel(channelID, userID, true, oldMessage);
+        Response response = apiRequests.updateMessage(channelID, messageToUpdateTimestamp, updatedMessage, true);
+        Assert.assertTrue(apiRequests.isOK(response) && (apiRequests.getMessageTextByTimestamp(channelID, messageToUpdateTimestamp).equals(updatedMessage)),
+                "Error: " + apiRequests.getErrorFromResponse(response));
+    }
 }

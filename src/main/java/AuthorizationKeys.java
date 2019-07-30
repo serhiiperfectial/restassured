@@ -32,9 +32,17 @@ public class AuthorizationKeys {
         return null;
     }
 
-    public static String getSlackLegecyToken() {
+    public static String getSlackLegacyToken() {
         for (String line : getKeysList()) {
             if (line.startsWith("SlackLegacyToken"))
+                return line.substring(line.indexOf(" ")+1).trim();
+        }
+        return null;
+    }
+
+    public static String getSlackBotToken() {
+        for (String line : getKeysList()) {
+            if (line.startsWith("SlackBotToken"))
                 return line.substring(line.indexOf(" ")+1).trim();
         }
         return null;

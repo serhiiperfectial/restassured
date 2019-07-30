@@ -12,6 +12,7 @@ public class Endpoints {
     //** ----------------- *//
     public static final String SLACK_CHANNEL = URLs.SLACK_URL + "/channels";
     public static final String SLACK_USERS = URLs.SLACK_URL + "/users";
+    public static final String SLACK_CHAT = URLs.SLACK_URL + "/chat";
 
 
 

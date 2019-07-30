@@ -140,13 +140,63 @@ public class APIRequests {
                 .post(Endpoints.SLACK_CHANNEL + ".invite");
     }
 
+    public Response deleteChannel(String channelID) {
+        return given().log().all()
+                .contentType(ContentType.URLENC)
+                .header("Authorization", AuthorizationKeys.getSlackToken())
+                .queryParam("channel", channelID)
+                .post(Endpoints.SLACK_CHANNEL + ".delete");
+    }
+
+    public Response getMessagesHistoryFromChannel(String channelID) {
+        return given().log().all()
+                .contentType(ContentType.URLENC)
+                .header("Authorization", AuthorizationKeys.getSlackToken())
+                .queryParam("channel", channelID)
+                .get(Endpoints.SLACK_CHANNEL + ".history");
+    }
+
+    public List<Map<String, Object>> getMessagesList(String channelID) {
+        return getMessagesHistoryFromChannel(channelID).getBody().jsonPath().getList("messages");
+    }
+
+    public String getMessageTimestampInChannel(String channelID, String userID, boolean isUser, String textMessage) {
+        for (Map<String, Object> message : getMessagesList(channelID)){
+            if (message.get("text").equals(textMessage))
+                if (isUser) {
+                    if (message.containsKey("user") && message.get("user").equals(userID))
+                        return message.get("ts").toString();
+                }
+                else
+                    if (message.containsKey("bot_id") && message.get("bot_id").equals(userID))
+                        return message.get("ts").toString();
+        }
+        return null;
+    }
+
+    public boolean isMessageInHistory(String channelID, String timestamp) {
+        for (Map<String, Object> message : getMessagesList(channelID)){
+            if (message.get("ts").toString().equals(timestamp))
+                return true;
+        }
+        return false;
+    }
+
+    public String getMessageTextByTimestamp(String channelID, String timestamp) {
+        for (Map<String, Object> message : getMessagesList(channelID)) {
+            if (message.get("ts").toString().equals(timestamp))
+                return message.get("text").toString();
+        }
+        return null;
+    }
+
 
     /** USERS */
 
     public Response inviteUserToWorkspaceByEmail(String channelID, String userEmail) {
         return given().log().all()
                 .contentType(ContentType.URLENC)
-                .header("Authorization", AuthorizationKeys.getSlackLegecyToken())
+                .header("Authorization", AuthorizationKeys.getSlackLegacyToken())
                 .queryParam("email", userEmail)
                 .queryParam("channels", channelID)
                 .post(Endpoints.SLACK_USERS + ".admin.invite");
@@ -169,8 +219,58 @@ public class APIRequests {
 
     public String getUserIDByName(String userName) {
         for (Map<String, String> user : getUsersList())
-            if (user.get("name").equals(userName))
+            if (user.get("name").equals(userName) || user.get("real_name").equals(userName))
                 return user.get("id");
         return null;
     }
+
+    /** CHATS */
+
+    private String getUserOrBotToken(boolean isUser){
+        if (isUser)
+            return AuthorizationKeys.getSlackToken();
+        else
+            return AuthorizationKeys.getSlackBotToken();
+    }
+
+    public Response postMessage(String channelID, String text, boolean isUser) {
+        String token = getUserOrBotToken(isUser);
+        String username = "";
+        if (!isUser)
+            username = "restassuredrobot";
+
+        return given().log().all()
+                .contentType(ContentType.URLENC)
+                .header("Authorization", token)
+                .queryParam("channel", channelID)
+                .queryParam("text", text)
+                .queryParam("as_user", isUser)
+                .queryParam("username", username)
+                .post(Endpoints.SLACK_CHAT + ".postMessage");
+    }
+
+    public Response updateMessage(String channelId, String messageToEditTimestamp, String newMessageText, boolean isUser) {
+        String token = getUserOrBotToken(isUser);
+        return given().log().all()
+                .contentType(ContentType.URLENC)
+                .header("Authorization", token)
+                .queryParam("channel", channelId)
+                .queryParam("ts", messageToEditTimestamp)
+                .queryParam("text", newMessageText)
+                .queryParam("as_user", isUser)
+                .post(Endpoints.SLACK_CHAT + ".update");
+    }
+
+    public Response deleteMessageFromChannel(String channelID, String messageTimestamp, boolean isUser) {
+        String token = getUserOrBotToken(isUser);
+
+        return given().log().all()
+                .contentType(ContentType.URLENC)
+                .header("Authorization", token)
+                .queryParam("channel", channelID)
+                .queryParam("ts", messageTimestamp)
+                .queryParam("as_user", isUser)
+                .post(Endpoints.SLACK_CHAT + ".delete");
+    }
+
 }
