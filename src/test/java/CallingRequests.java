@@ -1,12 +1,7 @@
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 
 public class CallingRequests {
 
@@ -36,8 +31,8 @@ public class CallingRequests {
 
     @Test
     public void renameChannel() {
-        String oldChannelName = "hello_third1_channel";
-        String newName = "Edited-name";
+        String oldChannelName = "hello_third_channel";
+        String newName = "Edited-name2";
         String channelID = apiRequests.getChannelIDByChannelName(oldChannelName);
         Response response = apiRequests.renameChannel(channelID, newName);
         Assert.assertEquals(apiRequests.getChannelNameByID(channelID), newName.toLowerCase(), "Error: " + apiRequests.getErrorFromResponse(response));
@@ -108,4 +103,12 @@ public class CallingRequests {
         Assert.assertTrue(apiRequests.isOK(response) && (apiRequests.getMessageTextByTimestamp(channelID, messageToUpdateTimestamp).equals(updatedMessage)),
                 "Error: " + apiRequests.getErrorFromResponse(response));
     }
+
+    // used specific token type
+//    @Test
+//    public void getPermissionsList() {
+//        String appName = "perf_slack";
+//        String[] list = apiRequests.getPermissionsFor(appName);
+//        for (String aList : list) System.out.println(aList);
+//    }
 }

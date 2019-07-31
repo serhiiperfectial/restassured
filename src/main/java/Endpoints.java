@@ -1,6 +1,3 @@
-import io.restassured.*;
-import io.restassured.response.Response;
-
 public class Endpoints {
 
     public static final String NEARBY_PLACE_PATH_PARAM = URLs.PLACE_URL + "/nearbysearch/json?location={location}&radius={radius}&key={key}";
@@ -9,10 +6,12 @@ public class Endpoints {
 
     public static final String DEMOQA_REGISTER_USER = URLs.DEMOQA_USER + "/register";
 
-    //** ----------------- *//
+    /** ----------------- */
     public static final String SLACK_CHANNEL = URLs.SLACK_URL + "/channels";
     public static final String SLACK_USERS = URLs.SLACK_URL + "/users";
     public static final String SLACK_CHAT = URLs.SLACK_URL + "/chat";
+    public static final String SLACK_APPS = URLs.SLACK_URL + "/apps";
+    public static final String SLACK_BOTS = URLs.SLACK_URL + "/bots";
 
 
 

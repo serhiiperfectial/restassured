@@ -1,7 +1,5 @@
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.internal.common.assertion.Assertion;
 import io.restassured.response.Response;
 
 import java.util.ArrayList;
@@ -33,11 +31,37 @@ public class APIRequests {
         return response.getBody().jsonPath().getList("results.name").contains(name);
     }
 
-    public void registerNewCustomer(String firstName, String userName, String password, String email) {
 
+    /** SLACK */
+
+    /** APPS */
+
+    public List<Map<String, Object>> getAllPermissionsScopesList() {
+        return given().log().all()
+                .contentType(ContentType.URLENC)
+                .header("Authorization", AuthorizationKeys.getSlackToken())
+                .get(Endpoints.SLACK_APPS + ".permissions.scopes.list")
+                .getBody().jsonPath().getList("scopes");
+    }
+
+    public String[] getPermissionsFor(String app) {
+        for (Map<String, Object> currentApp : getAllPermissionsScopesList())
+            if (currentApp.containsKey(app))
+                return (String[]) currentApp.get(app);
+
+        return null;
+    }
+
+    /** BOT */
+    public Map<String, Object> getBotInfo(){
+        return given().log().all()
+                .contentType(ContentType.URLENC)
+                .header("Authorization", AuthorizationKeys.getSlackToken())
+                .get(Endpoints.SLACK_BOTS + ".info").getBody().jsonPath().getMap("bot");
     }
 
 
+    /** CHANNELS */
 
     public Response createNewChannel(String channelName){
         return given().log().all()
@@ -68,11 +92,10 @@ public class APIRequests {
     }
 
     public List<Map<String, String>> getChannelsList(){
-        List<Map<String, String>> channels =  given().log().all()
+        return given().log().all()
                 .header("Authorization", AuthorizationKeys.getSlackToken())
                 .contentType(ContentType.URLENC)
                 .get(Endpoints.SLACK_CHANNEL + ".list").getBody().jsonPath().getList("channels");
-        return channels;
     }
 
     public Response setChannelTopic(String channel, String topic) {
@@ -100,7 +123,7 @@ public class APIRequests {
         return given().log().all()
                 .contentType(ContentType.URLENC)
                 .header("Authorization", AuthorizationKeys.getSlackToken())
-                .queryParam("channel", channelID)
+                .formParam("channel", channelID)
                 .get(Endpoints.SLACK_CHANNEL + ".info")
                 .getBody().jsonPath().getMap("channel");
     }
@@ -117,8 +140,8 @@ public class APIRequests {
         return given().log().all()
                 .contentType(ContentType.URLENC)
                 .header("Authorization", AuthorizationKeys.getSlackToken())
-                .queryParam("channel", channelID)
-                .queryParam("name", newName)
+                .formParam("channel", channelID)
+                .formParam("name", newName)
                 .post(Endpoints.SLACK_CHANNEL + ".rename");
     }
 
