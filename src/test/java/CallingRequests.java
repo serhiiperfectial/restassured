@@ -82,6 +82,14 @@ public class CallingRequests {
     }
 
     @Test
+    public void sendMessageToChannel2() {
+        String channelID = apiRequests.getChannelIDByChannelName("edited-name");
+        String textMessage = "Whazaaaaaaaappppp";
+        Response response = apiRequests.postMessageJSONScheme(channelID, textMessage, true);
+        Assert.assertEquals(response.getBody().jsonPath().get("message.text"), textMessage, "Error: " + apiRequests.getErrorFromResponse(response));
+    }
+
+    @Test
     public void deleteMessage(){
         String message = "Whazaaaaaaaappppp";
         String userID = apiRequests.getUserIDByName("Serhii");

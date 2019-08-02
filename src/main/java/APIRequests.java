@@ -1,6 +1,10 @@
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import jsonSchemas.PostMessage;
+
+import static io.restassured.RestAssured.post;
+import static org.hamcrest.Matchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -269,6 +273,25 @@ public class APIRequests {
                 .queryParam("text", text)
                 .queryParam("as_user", isUser)
                 .queryParam("username", username)
+                .post(Endpoints.SLACK_CHAT + ".postMessage");
+    }
+
+    public Response postMessageJSONScheme(String channelID, String text, boolean isUser) {
+        String token = getUserOrBotToken(isUser);
+        token = token.substring(token.indexOf(" ")+1);
+        String username = "";
+        if (!isUser)
+            username = "restassuredrobot";
+
+        PostMessage postMessage = new PostMessage();
+        postMessage.setChannel(channelID);
+        postMessage.setText(text);
+        postMessage.setAsUser(isUser);
+        postMessage.setUsername(username);
+        return given().log().all()
+                .auth().oauth2(token)
+                .contentType(ContentType.JSON)
+                .body(postMessage)
                 .post(Endpoints.SLACK_CHAT + ".postMessage");
     }
 
